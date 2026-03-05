@@ -5,26 +5,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-      - run: |
-          npm install
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          npm run build
-      - run: |
-          npx cap init "MyLauncher" "com.shlomi.launcher" --web-dir dist
-          npx cap add android
-          npx cap sync android
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-      - run: |
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
+          npx cap init "MyLauncher" "com.shlomi.launcher" --web-dir dist
+          npx cap add android
+          npx cap sync android
+      - name: Final Compile
+        run: |
           cd android
           chmod +x gradlew
-          ./gradlew clean
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon --stacktrace || ./gradlew assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: launcher-apk
