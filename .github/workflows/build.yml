@@ -8,16 +8,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - run: npm install && npm install @capacitor/core @capacitor/cli @capacitor/android && npm run build
+      - run: |
+          npm install
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npm run build
       - run: |
           npx cap init "MyLauncher" "com.shlomi.launcher" --web-dir dist
           npx cap add android
-          npx cap copy android
+          npx cap sync android
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-      - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+      - run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
         with:
           name: launcher-apk
